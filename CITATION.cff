@@ -1,11 +1,20 @@
 cff-version: 1.2.0
 message: "If you use this repository, please cite it as below."
 type: software
-title: "navierpinn-mineral-ore-body-reconstruction"
+title: "NavierPINN: Physics-Informed Ore-Body Reconstruction Between Drillholes"
+abstract: "Physics-informed ore-body reconstruction between drillholes"
 authors:
   - family-names: Mikhaylov
     given-names: Dmitry
     orcid: "https://orcid.org/0009-0009-2108-6820"
+    affiliation: "Abu Dhabi Maritime Academy, AD Ports Group"
 repository-code: "https://github.com/drdmitrymikhaylov/navierpinn-mineral-ore-body-reconstruction"
+url: "https://github.com/drdmitrymikhaylov/navierpinn-mineral-ore-body-reconstruction"
 license: "CC-BY-4.0"
-year: 2026
+keywords:
+  - "geology"
+  - "mineral exploration"
+  - "physics informed neural networks"
+  - "pytorch"
+  - "scientific computing"
+date-released: "2026-09-06"
