@@ -100,6 +100,59 @@ training loss in the control dock. 300 epochs, 2,048 collocation points, final l
 
 ![Tecto-PINN von Mises overlay](docs/images/03_pinn_vonmises.png)
 
+## Checking the solver against the lithostatic column
+
+*Computed 2026-09-24, added 2026-09-28.* The screenshot above shows a smooth stress field and a small loss.
+Neither says whether the field is right. The one case with a closed-form answer is the
+solver's own default problem: a homogeneous block under its own weight, fixed at the
+base. In the normalised unit cube the solver works in (ρg = 1, E = 1, ν = 0.25, so
+λ = μ = 0.4), the laterally confined column gives
+
+| quantity | closed form | at the base | at the top |
+|---|---|---|---|
+| vertical stress σ_zz | −(1 − z) | −1 | 0 (free surface) |
+| horizontal stress σ_xx = σ_yy | σ_zz / 3 | −0.333 | 0 |
+| von Mises | (2/3)(1 − z) | 0.667 | 0 |
+| vertical displacement u_z | −(z − z²/2) / 1.2 | 0 | −0.417 |
+
+I trained the solver headlessly with the configuration quoted under the screenshot
+(300 epochs, 2,048 collocation points) for five seeds and read the fields on 400 random
+points per horizontal level (`results/lithostatic_check.json`). Seed 0 reproduces the
+numbers under the screenshot: final loss 7.5 × 10⁻⁴, 11.9 s. The fields do not
+reproduce the column:
+
+| | seed 0 | seed 1 | seed 2 | seed 3 | seed 4 | mean ± sd | closed form |
+|---|---|---|---|---|---|---|---|
+| final loss | 7.5e-4 | 3.6e-3 | 1.1e-3 | 3.0e-3 | 2.1e-3 | | |
+| σ_zz at the top | −1.02 | −0.86 | −0.97 | −0.65 | −0.24 | **−0.75 ± 0.32** | **0** |
+| σ_zz at the base | −1.89 | −1.66 | −1.82 | −1.44 | −1.03 | −1.57 ± 0.35 | −1 |
+| von Mises at the base | 1.26 | 1.11 | 1.22 | 0.97 | 0.72 | **1.06 ± 0.22** | **0.667** |
+| u_z at the top | −1.22 | −1.07 | −1.17 | −0.88 | −0.57 | **−0.98 ± 0.26** | **−0.417** |
+
+sd is the sample sd over the five seeds. Within any one seed the stress is uniform over
+each horizontal face (sd over the face 0.004–0.036), and σ_zz rises by 0.80–0.88 per unit
+height in every run, close to the 1.0 the equilibrium equation demands. What differs
+between seeds is a constant offset of the whole profile: the top face carries a
+compression of 0.24 to 1.02 that should be zero, as if an unmodelled overburden of that
+many domain heights sat on the model, and the base stress, the top displacement and the
+von Mises overlay scale with it. The best seed (4) is within 4 % of the column at the
+base and still 1.4× on top displacement; the seed with the smallest loss (0) is the
+worst, at 1.9× the base stress and 2.9× the top displacement.
+
+The cause is the problem statement, not the optimiser. The solver constrains the
+interior equation and the fixed base, and nothing on the top or lateral faces. Equilibrium
+with gravity fixes the *gradient* of σ_zz; the *level* is fixed only by a traction
+condition on the free surface, which is absent, so any uniform compression added to the
+answer satisfies everything that is being minimised. The network picks a level by
+initialisation, which is why the same settings give a 2.1× spread in top displacement
+across seeds while the loss stays between 7 × 10⁻⁴ and 3.6 × 10⁻³ throughout, and why
+the smallest loss belongs to the worst run. Until a free-surface condition is added, the
+von Mises overlay in the screenshot is correct in shape (linear in depth, uniform across
+each level) and wrong in magnitude by a seed-dependent factor between 1.03 and 1.9 at the
+base.
+
+`tests/test_readme_numbers.py` pins every number in this section to the results file.
+
 ## Status
 
 Working application, in active development. Not open source: the Tecto-PINN solver is the
@@ -111,7 +164,8 @@ The source code is held in a private repository, all rights reserved.
 ## History of this page
 
 The code lives in a private repository. This public repository holds the page you are
-reading and three screenshots, nothing else.
+reading, three screenshots, the result file of the lithostatic check above and the tests
+that pin this page to it (see `CHANGELOG.md`).
 
 Before the page went public I removed the paragraph that described the solver physics in
 detail. Three shorter mentions of linear elasticity remain, in the feature table and the
