@@ -2,6 +2,17 @@
 
 **Ore-body modelling with a physics-informed neural network for tectonic deformation.**
 
+## Field record
+
+OreForge grew out of exploration work, not out of a benchmark. The same question came from
+programmes in East Africa, West Africa, Central Asia and the Andes: a handful of
+drillholes are in, and nobody can say where the fault moved the ore body between them.
+Geostatistics interpolates grade. It does not know that rock has to stay in mechanical
+equilibrium. I put that equation into the model. The seismic side of the same research
+line is protected by granted US patent 12,693,443 B1 (full-waveform inversion via
+generative deep learning, 2026). The solver on this page is covered by the provisional
+applications mentioned below.
+
 ## Overview
 
 OreForge is a desktop application for mineral exploration geology. It builds a 3D block
