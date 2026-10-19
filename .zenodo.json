@@ -1,0 +1,21 @@
+{
+  "upload_type": "software",
+  "title": "NavierPINN: Physics-Informed Ore-Body Reconstruction Between Drillholes",
+  "description": "Physics-informed ore-body reconstruction between drillholes",
+  "creators": [
+    {
+      "name": "Mikhaylov, Dmitry",
+      "orcid": "0009-0009-2108-6820",
+      "affiliation": "Abu Dhabi Maritime Academy, AD Ports Group"
+    }
+  ],
+  "license": "cc-by-4.0",
+  "keywords": [
+    "geology",
+    "mineral exploration",
+    "physics informed neural networks",
+    "pytorch",
+    "scientific computing"
+  ],
+  "access_right": "open"
+}
