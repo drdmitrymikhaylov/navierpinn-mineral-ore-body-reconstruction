@@ -142,7 +142,8 @@ reproduce the column:
 
 sd is the sample sd over the five seeds. Within any one seed the stress is uniform over
 each horizontal face (sd over the face 0.004–0.036), and σ_zz rises by 0.80–0.88 per unit
-height in every run, close to the 1.0 the equilibrium equation demands. What differs
+height in every run, short of the 1.0 that equilibrium demands of a column with
+traction-free sides (12–21 % short in all 25 seeds of the next section). What differs
 between seeds is a constant offset of the whole profile: the top face carries a
 compression of 0.24 to 1.02 that should be zero, as if an unmodelled overburden of that
 many domain heights sat on the model, and the base stress, the top displacement and the
@@ -160,9 +161,89 @@ across seeds while the loss stays between 7 × 10⁻⁴ and 3.6 × 10⁻³ throu
 the smallest loss belongs to the worst run. Until a free-surface condition is added, the
 von Mises overlay in the screenshot is correct in shape (linear in depth, uniform across
 each level) and wrong in magnitude by a seed-dependent factor between 1.03 and 1.9 at the
-base.
+base. That holds at the base; near the top of the seeds with the smallest offset it is
+wrong in shape as well (next section).
 
 `tests/test_readme_numbers.py` pins every number in this section to the results file.
+
+## The column again, 25 seeds
+
+*Computed and added 2026-10-21.* Five seeds left two things open: how the offset is
+distributed, and whether "an unmodelled overburden" is an explanation or a name. The same
+configuration was trained for 25 seeds (0–24; seeds 0–4 reproduce the table above to every
+stored digit; 298 s in all), and the σ_zz profile of every seed was fitted as a straight
+line through its five levels (largest residual 0.008). `results/offset_check.json`.
+
+| | 5 seeds | 25 seeds | closed form |
+|---|---|---|---|
+| compression at the top face | 0.75 ± 0.32 | 0.77 ± 0.21 (0.23 to 1.01, median 0.84) | 0 |
+| σ_zz at the base | −1.57 ± 0.35 | −1.59 ± 0.22 (−1.89 to −1.03) | −1 |
+| von Mises at the base | 1.06 ± 0.22 | 1.07 ± 0.14 (0.72 to 1.26) | 0.667 |
+| u_z at the top | −0.98 ± 0.26 | −1.00 ± 0.17 (−1.22 to −0.57) | −0.417 |
+| gradient of σ_zz with height | 0.80 to 0.88 | 0.82 ± 0.03 (0.79 to 0.88) | 1 |
+
+**The offset is always there.** 25 of 25 seeds put the top face in compression. Seed 4's
+0.23 is the smallest of the 25 (then 0.25 and 0.41; the other 22 sit between 0.64 and 1.01),
+so the five-seed sd of 0.32 was inflated by the one seed the sample happened to hold; with
+25 it is 0.21 and the median 0.84.
+
+**The overburden reading holds, with a second term.** If the column is laterally confined,
+its displacement is fixed by its own stress profile and nothing else: from the fitted
+σ_zz = a + b z, u_z(z) = (a z + b z²/2) / 1.2. The network's u_z at the top agrees with
+that prediction within 2.4 % ± 1.7 (0.6 to 8.3 % over the 25 seeds) — the displacement is
+what the stress says it should be in a confined column, so the offset is the mechanical
+overburden it was called, not only a name for the number. Its size alone *over*-explains the
+excess top displacement (110 % ± 5, 105 to 126 %), because the second error works the other
+way: the gradient of σ_zz is 0.787 to 0.875 per unit height in every seed, never 1 — a
+column with traction-free sides must gain exactly one unit of stress per unit of depth, so
+either the lateral faces carry 12–21 % of the weight in shear (nothing on them forbids it)
+or the interior equation is not met to that accuracy; a face mean cannot tell the two
+apart. Offset and short gradient together predict 95 % ± 6 of the excess (71 to 99 %).
+
+**Confinement weakens with height, and the three "best" seeds are the least confined.**
+
+| z | σ_zz, 25 seeds | σ_xx / σ_zz (closed form 0.333) | von Mises / \|σ_zz\| (closed form 0.667) |
+|---|---|---|---|
+| 0 | −1.59 ± 0.22 | 0.332 ± 0.001 (0.33 to 0.33) | 0.674 ± 0.008 (0.67 to 0.70) |
+| 0.25 | −1.39 ± 0.22 | 0.316 ± 0.009 (0.29 to 0.33) | 0.693 ± 0.018 (0.68 to 0.75) |
+| 0.5 | −1.18 ± 0.21 | 0.294 ± 0.024 (0.21 to 0.32) | 0.719 ± 0.037 (0.69 to 0.84) |
+| 0.75 | −0.97 ± 0.21 | 0.263 ± 0.052 (0.07 to 0.31) | 0.757 ± 0.075 (0.70 to 1.01) |
+| 1 | −0.77 ± 0.21 | 0.210 ± 0.126 (−0.28 to 0.30) | 0.828 ± 0.189 (0.71 to 1.49) |
+
+At the base every seed is the confined column (σ_xx / σ_zz 0.331 to 0.333). The ratio
+drifts off with height and scatters at the top, where it runs from −0.28 to 0.30 and the
+von Mises stress is 0.71 to 1.49 times what the vertical stress implies. The lateral
+displacement (mean |u_x| or |u_y| over a face, at the level where it is largest) is 1 to
+36 % of the top vertical displacement — above 10 % in 12 seeds, above 20 % in 5 — and the
+seeds with more of it are the seeds where the confined-column prediction of u_z is worse
+(Spearman ρ = 0.59, p = 0.002). The three smallest offsets belong to seeds 4, 10 and 8
+(0.23, 0.25, 0.41), and they are the three least confined columns: lateral displacement
+26 / 36 / 27 % of vertical, σ_xx / σ_zz at the top −0.28 / −0.02 / 0.01, von Mises at the
+top 1.49 / 1.36 / 1.01 times |σ_zz| against the column's 0.667. They lower the top
+compression by letting the block bulge sideways, not by finding the free surface.
+**Correction** to the section above: seed 4, "within 4 % of the column at the base", has
+the right base stress and, of all 25 seeds, the top stress state furthest from the column;
+there the von Mises overlay is wrong in shape, not only in level.
+
+**The loss ranks the runs backwards.** Over 25 seeds the final loss correlates with the
+top compression at Spearman ρ = −0.69 (p = 1.3 × 10⁻⁴) and with the top-displacement error
+at ρ = −0.72 (p = 5 × 10⁻⁵): the five lowest-loss seeds carry offsets of 0.84 to 1.01
+(mean 0.94), the five highest-loss 0.41 to 0.85 (mean 0.64). "The seed with the smallest
+loss is the worst" is the rule, not a five-seed accident: a run that keeps the column
+confined meets the interior equation better and carries a larger overburden (lateral
+displacement against offset ρ = −0.73, against loss ρ = +0.46, p = 0.02), and the loss
+rewards the first while it cannot see the second. Picking the run with the lowest loss,
+which is what a user watching the loss curve in the dock will do, picks the largest error.
+
+*What this does not show.* One configuration (300 epochs, 2,048 collocation points) and
+one problem; the fix itself — a traction condition on the top face — has not been run, so
+nothing here says how much of the offset it removes or whether the short gradient survives
+it; the shear on the lateral faces was not read, only inferred from the face-mean
+gradient; the seed sets the solver's own seed parameter, and the 25 runs share the
+sampling scheme.
+
+`tests/test_offset_check.py` pins every number in this section to the results file (and
+seeds 0–4 of it to `results/lithostatic_check.json`).
 
 ## Status
 
@@ -175,8 +256,8 @@ The source code is held in a private repository, all rights reserved.
 ## History of this page
 
 The code lives in a private repository. This public repository holds the page you are
-reading, three screenshots, the result file of the lithostatic check above and the tests
-that pin this page to it (see `CHANGELOG.md`).
+reading, three screenshots, the two result files of the lithostatic checks above and the
+tests that pin this page to them (see `CHANGELOG.md`).
 
 Before the page went public I removed the paragraph that described the solver physics in
 detail. Three shorter mentions of linear elasticity remain, in the feature table and the
