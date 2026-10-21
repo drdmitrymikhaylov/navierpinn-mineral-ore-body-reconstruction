@@ -1,5 +1,7 @@
 # OreForge
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23529559.svg)](https://doi.org/10.5281/zenodo.23529559)
+
 **Ore-body modelling with a physics-informed neural network for tectonic deformation.**
 
 ## Field record
